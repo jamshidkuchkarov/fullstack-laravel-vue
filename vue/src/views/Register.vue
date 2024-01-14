@@ -6,16 +6,26 @@
         </div>
 
         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form class="space-y-6" action="#" method="POST">
-                <Input type="email" label="Email address"/>
-                <Input type="password" label="Password"/>
-                <Button @click="submit" type="submit" text="Register"/>
+
+            <form class="space-y-6">
+                 <!-- User name  -->
+                <Input  v-model="name" type="text" label="User name"/>
+                <ValidationError v-if="validationError.errors?.name" :text="validationError.errors.name[0]"/>
+                <!-- Email  -->
+                <Input v-model="email" type="email" label="Email address"/>
+                <ValidationError v-if="validationError.errors?.email" :text="validationError.errors.email[0]"/>
+                <!-- Password  -->
+                <Input  v-model="password" type="password" label="Password"/>
+                <ValidationError v-if="validationError.errors?.password" :text="validationError.errors.password[0]"/>
+                <!-- Password confirmation  -->
+                <Input  v-model="password_confirmation" type="password" label="Password Confirmation"/>
+                <Button :isLoading="isLoading" @click="submit" type="submit" text="Register"/>
             </form>
 
             <p class="mt-10 text-center text-sm text-gray-500">
                Already member?
                 {{ ' ' }}
-                <router-link :to="{name:'login'}" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Login</router-link>
+                <router-link  :to="{name:'login'}" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Login</router-link>
             </p>
         </div>
     </div>
@@ -23,18 +33,44 @@
 
 
 <script>
+import {ValidationError} from "@/components/index.js";
 export default {
+    data(){
+      return{
+        name:'',
+        email:'',
+        password: '',
+        password_confirmation:'',
+        validationError:{},
+      }
+    },
     methods:{
         submit(e){
             e.preventDefault();
             const user = {
-                name:"jamshid",
-                email:"jamshisd21@gmail.com",
-                password:"12345678",
-                password_confirmation:"12345678"
+                name:this.name,
+                email:this.email,
+                password:this.password,
+                password_confirmation:this.password_confirmation
             };
-            this.$store.dispatch('register',user);
+            this.$store.dispatch('register',user)
+                .then(user=>{
+                this.$router.push({name:'home'})
+                })
+                .catch(error=>{
+                    this.validationError = error
+                console.log(error)
+            })
         }
+    },
+    computed:{
+        isLoading(){
+            return this.$store.state.auth.isLoading
+        },
+    },
+    components:{
+        ValidationError
     }
 }
+
 </script>

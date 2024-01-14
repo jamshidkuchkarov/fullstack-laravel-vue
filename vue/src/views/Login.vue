@@ -28,26 +28,60 @@
         </div>
 
         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form class="space-y-6" action="#" method="POST">
-
-                <Input type="email" label="Email address"/>
-                <Input type="password" label="Password"/>
-                <Button type="submit" text="Login"/>
-
+            <form class="space-y-6" >
+                <!-- Email  -->
+                <Input v-model="email" type="email" label="Email address"/>
+                <ValidationError v-if="validationError?.errors?.email" :text="validationError.errors.email[0]"/>
+                <!-- Password  -->
+                <Input  v-model="password" type="password" label="Password"/>
+                <ValidationError v-if="validationError?.errors?.password" :text="validationError.errors.password[0]"/>
+                <ValidationError v-if="validationError?.status" :text="validationError.message"/>
+                <Button :isLoading="isLoading" @click="login" type="submit" text="Register"/>
             </form>
 
             <p class="mt-10 text-center text-sm text-gray-500">
                 Not a member?
                 {{ ' ' }}
-                <a href="#" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Start a 14 day free trial</a>
+                <router-link :to="{name:'register'}" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Register</router-link>
             </p>
         </div>
     </div>
 </template>
 <script>
-
-
+import {ValidationError} from "@/components/index.js";
+import {mapState} from 'vuex'
 export default {
+    data(){
+        return{
+            email:'',
+            password:'',
+        }
+    },
+    components:{
+        ValidationError
+    },
+    methods:{
+        login(e){
+            e.preventDefault();
+            const user = {
+                email:this.email,
+                password:this.password
+            }
+            this.$store.dispatch('login',user)
+                .then(()=>{
+                this.$router.push({name:'home'})
+            })
+        }
+    },
+    computed: {
+        isLoading() {
+            return this.$store.state.auth.isLoading
+        },
+        ...mapState({
+            isLoading:state =>state.auth.isLoading,
+            validationError:state=>state.auth.errors
+                 })
+    }
 
 }
 </script>
