@@ -1,10 +1,23 @@
 import AuthService from "@/service/auth.js";
 import {setItem} from "@/helpers/persistaneStorage.js";
+import {gettersTypes} from "@/modules/types.js";
+
 const  state = {
     isLoading:false,
     user:null,
     errors:null,
     isLoggedIn:null
+}
+const getters = {
+    [gettersTypes.currentUser]:state=>{
+        return state.user
+    },
+    [gettersTypes.isLoggedIn]:state=>{
+        return Boolean(state.isLoggedIn)
+    },
+    [gettersTypes.isAnonymous]:state=>{
+        return state.isLoggedIn ===false
+    }
 }
 
 const mutations = {
@@ -40,6 +53,19 @@ const mutations = {
         state.isLoading = false
         state.errors = payload
         state.isLoggedIn=false
+    },
+    currentUserStart(state){
+        state.isLoading = true
+        state.user = null
+    },
+    currentUserSuccess(state,payload){
+        state.isLoading = false
+        state.user = payload
+        state.isLoggedIn = true
+    },
+    currentUserFailure(state,payload){
+        state.isLoading = false
+       state.errors = payload
     }
 }
 
@@ -72,9 +98,19 @@ const actions = {
                 reject(error.response.data)
             })
         })
+    },
+    getUser(context){
+       return new Promise((resolve)=>{
+           context.commit('currentUserStart')
+           AuthService.getUser().then(response=>{
+             context.commit('currentUserSuccess',response.data)
+               resolve(response.data)
+           }).catch(()=>context.commit('currentUserFailure'))
+
+       })
     }
 }
 
 export default {
-    state,mutations,actions
+    state,mutations,actions,getters
 }

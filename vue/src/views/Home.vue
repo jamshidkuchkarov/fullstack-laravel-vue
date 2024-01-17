@@ -42,7 +42,7 @@
                             </Menu>
                         </div>
                     </div>
-                    <div v-else class="hidden md:block">
+                    <div v-if="isAnonymous" class="hidden md:block">
                         <div class="ml-10 flex items-baseline space-x-4">
                             <router-link :to="{name:'login'}" class="text-gray-300 hover:bg-gray-700 hover:text-whiterounded-md px-3 py-2 text-sm font-medium bg-gray-900 text-white" >Login</router-link>
                             <router-link :to="{name:'register'}" class="text-gray-300 hover:bg-gray-700 hover:text-whiterounded-md px-3 py-2 text-sm font-medium bg-gray-900 text-white" >Register</router-link>
@@ -89,7 +89,6 @@
         <header class="bg-white shadow">
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <h1 class="text-3xl font-bold tracking-tight text-gray-900">Blogs</h1>
-                {{isLoggedIn}}
             </div>
         </header>
         <main>
@@ -101,13 +100,15 @@
 </template>
 
 <script>
-  import {mapState} from "vuex";
+import { mapGetters } from 'vuex'
+import {gettersTypes} from "@/modules/types.js";
 
   export default {
       computed:{
-          ...mapState({
-              username:state=>state.auth.user,
-              isLoggedIn:state=>state.auth.isLoggedIn
+          ...mapGetters({
+              currentUser:gettersTypes.currentUser,
+              isLoggedIn:gettersTypes.isLoggedIn,
+              isAnonymous:gettersTypes.isAnonymous
           })
       }
   }
