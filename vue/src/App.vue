@@ -5,6 +5,7 @@
 
 <script>
 import {Navbar} from "@/components";
+import {mapState} from "vuex";
 export default {
     components: {Navbar},
     mounted() {

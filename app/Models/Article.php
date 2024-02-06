@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Article extends Model
 {
     use HasFactory;
+
+    protected $fillable=['slug','title','description','body','user_id'];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d',
+    ];
 }
